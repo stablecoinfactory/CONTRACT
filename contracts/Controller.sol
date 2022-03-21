@@ -206,7 +206,7 @@ contract Controller {
             pendingTime[msg.sender] = block.timestamp + (100000 * 10);
         }
 
-        uint256 _tokenamount = ((_amount * 1000000000000000) *
+        uint256 _tokenamount = ((_amount * 1000000000000) *
             STABLEFACT[_usddollar]) / 1e18;
 
         pendingBal[msg.sender] =
