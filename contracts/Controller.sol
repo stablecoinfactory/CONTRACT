@@ -103,6 +103,14 @@ interface AAVE {
 }
 
 contract Controller {
+    event Deposit(
+        address indexed _token,
+        address indexed _from,
+        uint256 _value
+    );
+
+    event Claim(address indexed _from, uint256 _value);
+
     uint256 private constant MAX_INT = 2**256 - 1;
     uint256 public MULT;
 
@@ -179,7 +187,7 @@ contract Controller {
     }
 
     function deposit(address _usddollar, uint256 _amount) internal {
-        require(_amount >= 1000000, "Amount should be greater than 1");
+        require(_amount >= 2000000, "Amount should be greater than 1");
 
         randstep();
 
@@ -198,7 +206,7 @@ contract Controller {
         LOCKED[_usddollar] =
             LOCKED[_usddollar] +
             amount_nult -
-            delta(amount_nult);
+            (delta(amount_nult) * 2);
 
         if (block.timestamp + (100000 * MULT) > pendingTime[msg.sender]) {
             pendingTime[msg.sender] = block.timestamp + (100000 * MULT);
@@ -213,6 +221,8 @@ contract Controller {
             pendingBal[msg.sender] +
             _tokenamount +
             delta(_tokenamount);
+
+        emit Deposit(_usddollar, msg.sender, _tokenamount);
     }
 
     function withdraw(address _usddollar, address _aave) internal {
@@ -236,6 +246,8 @@ contract Controller {
         require(block.timestamp > pendingTime[msg.sender], "Wait for cooldown");
 
         IERC20(TOKEN).mint(msg.sender, pendingBal[msg.sender]);
+
+        emit Claim(msg.sender, pendingBal[msg.sender]);
 
         pendingBal[msg.sender] = 0;
 
